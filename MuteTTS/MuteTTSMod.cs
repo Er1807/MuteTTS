@@ -117,8 +117,6 @@ namespace MuteTTS
                 stream.Write(buffer, 0, buffer.Length);
                 stream.Position = 0;
 
-                MelonLogger.Msg(audiosource);
-                MelonLogger.Msg(CreateAudioClipFromStream(buffer));
                 if(audiosource==null)
                     audiosource = CreateAudioSource();
                 audiosource.clip = CreateAudioClipFromStream(buffer);
