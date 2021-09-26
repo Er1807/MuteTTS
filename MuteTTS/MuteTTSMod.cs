@@ -8,12 +8,13 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using UIExpansionKit.API;
 using UnhollowerBaseLib;
 using UnityEngine;
 using UnityEngine.UI;
 
-[assembly: MelonInfo(typeof(MuteTTSMod), "MuteTTS", "1.0.0", "Eric van Fandenfart")]
+[assembly: MelonInfo(typeof(MuteTTSMod), "MuteTTS", "1.0.1", "Eric van Fandenfart")]
 [assembly: MelonAdditionalDependencies("ActionMenuApi", "UIExpansionKit")]
 [assembly: MelonGame]
 
@@ -99,31 +100,33 @@ namespace MuteTTS
 
         private void GetVoice(string msg = "Hello World")
         {
-            ProcessStartInfo startInfo = CreateDefaultStartInfo();
+            Task.Run(()=>{
+                ProcessStartInfo startInfo = CreateDefaultStartInfo();
 
-            msg = msg.Replace("\\", "").Replace("\"", "");
-            if(useVoiceSetting.Value == -1)
-                startInfo.Arguments = $"PlayVoice \"{msg}\"";
-            else
-                startInfo.Arguments = $"PlayVoice \"{msg}\" {useVoiceSetting.Value}";
+                msg = msg.Replace("\\", "").Replace("\"", "");
+                if (useVoiceSetting.Value == -1)
+                    startInfo.Arguments = $"PlayVoice \"{msg}\"";
+                else
+                    startInfo.Arguments = $"PlayVoice \"{msg}\" {useVoiceSetting.Value}";
 
 
-            using (Process exeProcess = Process.Start(startInfo))
-            {
-                ConsumeReader(exeProcess.StandardOutput, false);
-                exeProcess.WaitForExit();
-                byte[] buffer = Convert.FromBase64String(lastLineRead);
-                stream = new MemoryStream();
-                stream.Write(buffer, 0, buffer.Length);
-                stream.Position = 0;
+                using (Process exeProcess = Process.Start(startInfo))
+                {
+                    ConsumeReader(exeProcess.StandardOutput, false);
+                    exeProcess.WaitForExit();
+                    byte[] buffer = Convert.FromBase64String(lastLineRead);
+                    stream = new MemoryStream();
+                    stream.Write(buffer, 0, buffer.Length);
+                    stream.Position = 0;
 
-                if(audiosource==null)
-                    audiosource = CreateAudioSource();
-                audiosource.clip = CreateAudioClipFromStream(buffer);
-                audiosource.Play();
-                playing = true;
+                    if (audiosource == null)
+                        audiosource = CreateAudioSource();
+                    audiosource.clip = CreateAudioClipFromStream(buffer);
+                    audiosource.Play();
+                    playing = true;
 
-            }
+                }
+            });
         }
 
         private AudioClip CreateAudioClipFromStream(byte[] buffer)
