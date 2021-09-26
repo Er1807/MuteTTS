@@ -14,7 +14,7 @@ using UnhollowerBaseLib;
 using UnityEngine;
 using UnityEngine.UI;
 
-[assembly: MelonInfo(typeof(MuteTTSMod), "MuteTTS", "1.0.1", "Eric van Fandenfart")]
+[assembly: MelonInfo(typeof(MuteTTSMod), "MuteTTS", "1.0.2", "Eric van Fandenfart")]
 [assembly: MelonAdditionalDependencies("ActionMenuApi", "UIExpansionKit")]
 [assembly: MelonGame]
 
@@ -57,8 +57,10 @@ namespace MuteTTS
             try
             {
                 var assembly = Assembly.GetExecutingAssembly();
-                exeLocation = Path.GetTempPath() + "MuteTTSClient.exe";
+                string path = "Executables";
+                exeLocation = Path.GetFullPath(path + "/MuteTTSClient.exe");
 
+                Directory.CreateDirectory(path);
                 using (var stream = assembly.GetManifestResourceStream("MuteTTS.MuteTTSClient.exe"))
                 {
                     using (FileStream file = new FileStream(exeLocation, FileMode.Create))
