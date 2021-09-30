@@ -14,7 +14,7 @@ using UnhollowerBaseLib;
 using UnityEngine;
 using UnityEngine.UI;
 
-[assembly: MelonInfo(typeof(MuteTTSMod), "MuteTTS", "1.0.2", "Eric van Fandenfart")]
+[assembly: MelonInfo(typeof(MuteTTSMod), "MuteTTS", "1.0.3", "Eric van Fandenfart")]
 [assembly: MelonAdditionalDependencies("ActionMenuApi", "UIExpansionKit")]
 [assembly: MelonGame]
 
@@ -25,10 +25,11 @@ namespace MuteTTS
         private static MemoryStream stream = new MemoryStream();
         private static AudioSource audiosource = new AudioSource();
         private static bool playing = false;
-
+        private static bool lastMuteValue;
         private string lastLineRead;
         private string exeLocation;
         private MelonPreferences_Entry<int> useVoiceSetting;
+        private static MelonPreferences_Entry<bool> blockMic;
 
         private MethodInfo UseKeyboardOnlyForText;
 
@@ -41,7 +42,12 @@ namespace MuteTTS
                 MelonLogger.Msg("MuteTTS is only available for Windows");
                 return;
             }
-            useVoiceSetting = MelonPreferences.CreateCategory("MuteTTS").CreateEntry("UseVoice", -1);
+
+            MelonPreferences_Category category = MelonPreferences.CreateCategory("MuteTTS");
+            useVoiceSetting = category.CreateEntry("UseVoice", -1);
+
+            blockMic = category.CreateEntry("BlockMic", false, description:"VRC will no longer be able to send your Voice. Only TTS is available");
+
             ExtractExecutable();
             VRCActionMenuPage.AddButton(ActionMenuPage.Main, "TTS", () => CreateTextPopup());
             //VRCActionMenuPage.AddButton(ActionMenuPage.Main, "ListTTS", () => LogAvailableVoices());
@@ -126,7 +132,8 @@ namespace MuteTTS
                     audiosource.clip = CreateAudioClipFromStream(buffer);
                     audiosource.Play();
                     playing = true;
-
+                    lastMuteValue = DefaultTalkController.field_Private_Static_Boolean_0;
+                    DefaultTalkController.field_Private_Static_Boolean_0 = false;//Unmute
                 }
             });
         }
@@ -197,6 +204,7 @@ namespace MuteTTS
                 if (read == 0)
                 {
                     playing = false;
+                    DefaultTalkController.field_Private_Static_Boolean_0 = lastMuteValue;//Restore mute state
                     return;
                 }
 
@@ -208,7 +216,12 @@ namespace MuteTTS
                         data[i] = 0;
                 }
 
+            }else if (blockMic.Value)
+            {
+                for (int i = 0; i < data.Count; i++)
+                    data[i] = 0;
             }
+            
         }
     }
 }
