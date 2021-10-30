@@ -4,6 +4,8 @@ Mod for VRChat that allows for TTS to be used ingame
 
 It currently only works on Windows on other systems it will not load
 
+Requires [ActionMenuApi](https://github.com/gompoc/VRChatMods/tree/master/ActionMenuApi)
+
 ## How to
 Open the Radial menu and select TTS
 
