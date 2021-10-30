@@ -1,9 +1,11 @@
 ﻿using ActionMenuApi.Api;
 using HarmonyLib;
+using Il2CppSystem.Collections.Generic;
 using MelonLoader;
 using MuteTTS;
 using System;
 using System.Diagnostics;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -14,7 +16,7 @@ using UnhollowerBaseLib;
 using UnityEngine;
 using UnityEngine.UI;
 
-[assembly: MelonInfo(typeof(MuteTTSMod), "MuteTTS", "1.0.3", "Eric van Fandenfart")]
+[assembly: MelonInfo(typeof(MuteTTSMod), "MuteTTS", "1.0.4", "Eric van Fandenfart")]
 [assembly: MelonAdditionalDependencies("ActionMenuApi", "UIExpansionKit")]
 [assembly: MelonGame]
 
@@ -23,17 +25,18 @@ namespace MuteTTS
     public class MuteTTSMod : MelonMod
     {
         private static MemoryStream stream = new MemoryStream();
-        private static AudioSource audiosource = new AudioSource();
+        private static AudioSource audiosource = null;
         private static bool playing = false;
         private static bool lastMuteValue;
         private string lastLineRead;
         private string exeLocation;
         private MelonPreferences_Entry<int> useVoiceSetting;
         private static MelonPreferences_Entry<bool> blockMic;
+        private static MelonPreferences_Entry<float> TTSSpeed;
+        private static MelonPreferences_Entry<float> TTSVolume;
 
         private MethodInfo UseKeyboardOnlyForText;
 
-        
 
         public override void OnApplicationStart()
         {
@@ -46,13 +49,15 @@ namespace MuteTTS
             MelonPreferences_Category category = MelonPreferences.CreateCategory("MuteTTS");
             useVoiceSetting = category.CreateEntry("UseVoice", -1);
 
-            blockMic = category.CreateEntry("BlockMic", false, description:"VRC will no longer be able to send your Voice. Only TTS is available");
+            blockMic = category.CreateEntry("BlockMic", false, description: "VRC will no longer be able to send your Voice. Only TTS is available");
+            TTSVolume = category.CreateEntry("TTS Volume", 1f, description: "Value between 0 and 1");
+            TTSSpeed = category.CreateEntry("TTS Speed", 1f);
 
             ExtractExecutable();
+            
             VRCActionMenuPage.AddButton(ActionMenuPage.Main, "TTS", () => CreateTextPopup());
-            //VRCActionMenuPage.AddButton(ActionMenuPage.Main, "ListTTS", () => LogAvailableVoices());
+            
             LogAvailableVoices();
-
             UseKeyboardOnlyForText = typeof(VRCInputManager).GetMethods().First(mi => mi.Name.StartsWith("Method_Public_Static_Void_Boolean_PDM") && mi.GetParameters().Count() == 1);
 
             HarmonyInstance.Patch(typeof(AudioClip).GetMethod("GetData", BindingFlags.Instance | BindingFlags.Public), postfix: new HarmonyMethod(typeof(MuteTTSMod).GetMethod("Get", BindingFlags.Static | BindingFlags.Public)));
@@ -112,17 +117,17 @@ namespace MuteTTS
                 ProcessStartInfo startInfo = CreateDefaultStartInfo();
 
                 msg = msg.Replace("\\", "").Replace("\"", "");
-                if (useVoiceSetting.Value == -1)
-                    startInfo.Arguments = $"PlayVoice \"{msg}\"";
-                else
-                    startInfo.Arguments = $"PlayVoice \"{msg}\" {useVoiceSetting.Value}";
 
+                startInfo.Arguments = $"PlayVoice \"{msg}\" {useVoiceSetting.Value} {Convert.ToString(TTSSpeed.Value,CultureInfo.InvariantCulture)} {Convert.ToString(TTSVolume.Value,CultureInfo.InvariantCulture)}";
 
+                MelonLogger.Msg($"Calling excutable with parameters {startInfo.Arguments.Replace(msg, "***")}");
+                
                 using (Process exeProcess = Process.Start(startInfo))
                 {
                     ConsumeReader(exeProcess.StandardOutput, false);
                     exeProcess.WaitForExit();
                     byte[] buffer = Convert.FromBase64String(lastLineRead);
+                    MelonLogger.Msg($"Recieved {buffer.Length} bytes from excutable to play");
                     stream = new MemoryStream();
                     stream.Write(buffer, 0, buffer.Length);
                     stream.Position = 0;
@@ -165,7 +170,7 @@ namespace MuteTTS
         private void CreateTextPopup()
         {
             UseKeyboardOnlyForText.Invoke(null, new object[] { true });
-            VRCInputManager.Method_Public_Static_Void_Boolean_PDM_0(true);
+
             BuiltinUiUtils.ShowInputPopup("MuteTTS", "", InputField.InputType.Standard, false, "Send", (message, _, _2) =>
             {
                 UseKeyboardOnlyForText.Invoke(null, new object[] { false });
