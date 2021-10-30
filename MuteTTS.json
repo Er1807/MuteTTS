@@ -1,8 +1,8 @@
 {
   "_id": 264,
   "name": "MuteTTS",
-  "modversion": "1.0.3",
-  "vrchatversion": "1133",
+  "modversion": "1.0.4",
+  "vrchatversion": "1134",
   "loaderversion": "v0.4.3 Open-Beta",
   "modtype": "Mod",
   "author": "Eric van Fandenfart",
@@ -14,8 +14,8 @@
     "[ActionMenuApi](https://github.com/gompocp/ActionMenuApi)",
     "[UIExpansionKit](https://github.com/knah/VRCMods/tree/master/UIExpansionKit)"
   ],
-  "downloadlink": "https://github.com/Er1807/MuteTTS/releases/download/v1.0.3/MuteTTS.dll",
+  "downloadlink": "https://github.com/Er1807/MuteTTS/releases/download/v1.0.4/MuteTTS.dll",
   "sourcelink": "https://github.com/Er1807/MuteTTS",
-  "changelog": "Unmute when sending TTS and add option to always block your voice in Melonsettings",
+  "changelog": "Added Volume and Speed Setting",
   "embedcolor": "7F60CA"
 }
