@@ -158,12 +158,14 @@ namespace MuteTTS
 
         private ProcessStartInfo CreateDefaultStartInfo()
         {
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.CreateNoWindow = false;
-            startInfo.UseShellExecute = false;
-            startInfo.RedirectStandardOutput = true;
-            startInfo.FileName = exeLocation;
-            startInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            ProcessStartInfo startInfo = new ProcessStartInfo
+            {
+                CreateNoWindow = false,
+                UseShellExecute = false,
+                RedirectStandardOutput = true,
+                FileName = exeLocation,
+                WindowStyle = ProcessWindowStyle.Hidden
+            };
             return startInfo;
         }
 
