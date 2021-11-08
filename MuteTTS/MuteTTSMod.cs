@@ -1,6 +1,5 @@
 ﻿using ActionMenuApi.Api;
 using HarmonyLib;
-using Il2CppSystem.Collections.Generic;
 using MelonLoader;
 using MuteTTS;
 using System;
@@ -56,9 +55,8 @@ namespace MuteTTS
             ExtractExecutable();
             
             VRCActionMenuPage.AddButton(ActionMenuPage.Main, "TTS", () => CreateTextPopup());
-            
             LogAvailableVoices();
-            UseKeyboardOnlyForText = typeof(VRCInputManager).GetMethods().First(mi => mi.Name.StartsWith("Method_Public_Static_Void_Boolean_PDM") && mi.GetParameters().Count() == 1);
+            UseKeyboardOnlyForText = typeof(VRCInputManager).GetMethods().First(mi => mi.Name.StartsWith("Method_Public_Static_Void_Boolean_0") && mi.GetParameters().Count() == 1);
 
             HarmonyInstance.Patch(typeof(AudioClip).GetMethod("GetData", BindingFlags.Instance | BindingFlags.Public), postfix: new HarmonyMethod(typeof(MuteTTSMod).GetMethod("Get", BindingFlags.Static | BindingFlags.Public)));
         }
