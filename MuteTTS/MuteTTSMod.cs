@@ -91,12 +91,12 @@ namespace MuteTTS
             MelonLogger.Msg("Available Voices:");
             using (Process exeProcess = Process.Start(startInfo))
             {
-                ConsumeReader(exeProcess.StandardOutput, true);
+                _ = ConsumeReader(exeProcess.StandardOutput, true);
                 exeProcess.WaitForExit();
             }
         }
 
-        private async void ConsumeReader(TextReader reader, bool justPrint)
+        private async Task ConsumeReader(TextReader reader, bool justPrint)
         {
             string text;
 
@@ -122,8 +122,9 @@ namespace MuteTTS
                 
                 using (Process exeProcess = Process.Start(startInfo))
                 {
-                    ConsumeReader(exeProcess.StandardOutput, false);
+                    Task reader = ConsumeReader(exeProcess.StandardOutput, false);
                     exeProcess.WaitForExit();
+                    reader.Wait();
                     byte[] buffer = Convert.FromBase64String(lastLineRead);
                     MelonLogger.Msg($"Recieved {buffer.Length} bytes from excutable to play");
                     stream = new MemoryStream();
