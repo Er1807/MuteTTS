@@ -134,6 +134,7 @@ namespace MuteTTS
                     if (audiosource == null)
                         audiosource = CreateAudioSource();
                     audiosource.clip = CreateAudioClipFromStream(buffer);
+                    audiosource.outputAudioMixerGroup = GetVoiceAudioMixerGroup();
                     audiosource.Play();
                     playing = true;
                     lastMuteValue = DefaultTalkController.field_Private_Static_Boolean_0;
@@ -229,5 +230,14 @@ namespace MuteTTS
             }
             
         }
-    }
+
+        private UnityEngine.Audio.AudioMixerGroup GetVoiceAudioMixerGroup()
+        {
+            UnityEngine.Audio.AudioMixerGroup defaultAudioMixer = VRCAudioManager.Method_Public_Static_AudioMixerGroup_0(); // Default audio mixer
+            Il2CppReferenceArray<UnityEngine.Audio.AudioMixerGroup> audioMixers = VRCAudioManager.field_Private_Static_VRCAudioManager_0.field_Public_AudioMixer_0.FindMatchingGroups("Voice");
+//            if (audioMixers.Length > 0)
+//                MelonLogger.Msg("Found Voice Audio Mixer");
+            return (audioMixers.Length > 0) ? audioMixers.First<UnityEngine.Audio.AudioMixerGroup>() : defaultAudioMixer;
+        }
 }
+    }
