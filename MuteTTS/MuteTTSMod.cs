@@ -15,7 +15,7 @@ using UnhollowerBaseLib;
 using UnityEngine;
 using UnityEngine.UI;
 
-[assembly: MelonInfo(typeof(MuteTTSMod), "MuteTTS", "1.0.6", "Eric van Fandenfart")]
+[assembly: MelonInfo(typeof(MuteTTSMod), "MuteTTS", "1.0.7", "Eric van Fandenfart")]
 [assembly: MelonAdditionalDependencies("ActionMenuApi", "UIExpansionKit")]
 [assembly: MelonGame]
 
@@ -145,7 +145,7 @@ namespace MuteTTS
 
         private AudioClip CreateAudioClipFromStream(byte[] buffer)
         {
-            AudioClip myClip = AudioClip.Create("Test", buffer.Length, 1, 48000, false);
+            AudioClip myClip = AudioClip.Create("MuteTTS", buffer.Length, 1, 48000, false);
             Il2CppStructArray<float> t = new Il2CppStructArray<float>(buffer.Length);
             for (int i = 0; i < buffer.Length; i++)
             {
