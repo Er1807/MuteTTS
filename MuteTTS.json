@@ -1,9 +1,9 @@
 {
   "_id": 264,
   "name": "MuteTTS",
-  "modversion": "1.0.7",
-  "vrchatversion": "1149",
-  "loaderversion": "v0.4.3 Open-Beta",
+  "modversion": "1.0.8",
+  "vrchatversion": "1174",
+  "loaderversion": "v0.5.4",
   "modtype": "Mod",
   "author": "Eric van Fandenfart",
   "description": "Allows you to use TTS directly in VRC. Only works on Windows. Has an option so you dont need to mute your mic while still not transmitting your voice.",
@@ -14,8 +14,8 @@
     "[ActionMenuApi](https://github.com/gompocp/ActionMenuApi)",
     "[UIExpansionKit](https://github.com/knah/VRCMods/tree/master/UIExpansionKit)"
   ],
-  "downloadlink": "https://github.com/Er1807/MuteTTS/releases/download/v1.0.7/MuteTTS.dll",
+  "downloadlink": "https://github.com/Er1807/MuteTTS/releases/download/v1.0.8/MuteTTS.dll",
   "sourcelink": "https://github.com/Er1807/MuteTTS",
-  "changelog": "Use Voice Mixer",
+  "changelog": "Fixed Voice sounding bad on remote",
   "embedcolor": "7F60CA"
 }
