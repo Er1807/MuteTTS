@@ -15,7 +15,7 @@ using UnhollowerBaseLib;
 using UnityEngine;
 using UnityEngine.UI;
 
-[assembly: MelonInfo(typeof(MuteTTSMod), "MuteTTS", "1.0.7", "Eric van Fandenfart")]
+[assembly: MelonInfo(typeof(MuteTTSMod), "MuteTTS", "1.0.8", "Eric van Fandenfart")]
 [assembly: MelonAdditionalDependencies("ActionMenuApi", "UIExpansionKit")]
 [assembly: MelonGame]
 
@@ -196,11 +196,13 @@ namespace MuteTTS
         public static void Get(AudioClip __instance, ref Il2CppStructArray<float> data, int offsetSamples)
         {
             if (__instance?.name != "Microphone") return;
+            if (data.Length != 960) return; //why ever there is a second reader with 256 buffer
+            //MelonLogger.Msg("reading");
             //MelonLogger.Msg(data.Length); //== 960
-            //MelonLogger.Msg(offsetSamples); -> inc by 960
+            //MelonLogger.Msg(offsetSamples); //-> inc by 960
             //MelonLogger.Msg(__instance.frequency); //== 48000
-            //MelonLogger.Msg(__instance.length); //== 240000
-            //MelonLogger.Msg(__instance.samples); //==5
+            //MelonLogger.Msg(__instance.length); //== 5
+            //MelonLogger.Msg(__instance.samples); //==240000
             //MelonLogger.Msg(__instance.channels); //== 1
 
             if (playing)
