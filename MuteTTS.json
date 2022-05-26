@@ -1,8 +1,8 @@
 {
   "_id": 264,
   "name": "MuteTTS",
-  "modversion": "1.0.8",
-  "vrchatversion": "1174",
+  "modversion": "1.1.0",
+  "vrchatversion": "1201",
   "loaderversion": "v0.5.4",
   "modtype": "Mod",
   "author": "Eric van Fandenfart",
@@ -14,8 +14,8 @@
     "[ActionMenuApi](https://github.com/gompocp/ActionMenuApi)",
     "[UIExpansionKit](https://github.com/knah/VRCMods/tree/master/UIExpansionKit)"
   ],
-  "downloadlink": "https://github.com/Er1807/MuteTTS/releases/download/v1.0.8/MuteTTS.dll",
+  "downloadlink": "https://github.com/Er1807/MuteTTS/releases/download/v1.1.0/MuteTTS.dll",
   "sourcelink": "https://github.com/Er1807/MuteTTS",
-  "changelog": "Fixed Voice sounding bad on remote",
+  "changelog": "Fix for 1201",
   "embedcolor": "7F60CA"
 }
