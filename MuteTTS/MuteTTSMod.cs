@@ -3,6 +3,7 @@ using HarmonyLib;
 using MelonLoader;
 using MuteTTS;
 using System;
+using System.Collections;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
@@ -15,7 +16,7 @@ using UnhollowerBaseLib;
 using UnityEngine;
 using UnityEngine.UI;
 
-[assembly: MelonInfo(typeof(MuteTTSMod), "MuteTTS", "1.0.8", "Eric van Fandenfart")]
+[assembly: MelonInfo(typeof(MuteTTSMod), "MuteTTS", "1.1.0", "Eric van Fandenfart")]
 [assembly: MelonAdditionalDependencies("ActionMenuApi", "UIExpansionKit")]
 [assembly: MelonGame]
 
@@ -35,7 +36,7 @@ namespace MuteTTS
         private static MelonPreferences_Entry<float> TTSVolume;
 
         private MethodInfo UseKeyboardOnlyForText;
-
+        private static Toggle micToggle;
 
         public override void OnApplicationStart()
         {
@@ -51,6 +52,8 @@ namespace MuteTTS
             blockMic = category.CreateEntry("BlockMic", false, description: "VRC will no longer be able to send your Voice. Only TTS is available");
             TTSVolume = category.CreateEntry("TTS Volume", 1f, description: "Value between 0 and 1");
             TTSSpeed = category.CreateEntry("TTS Speed", 1f);
+
+            MelonCoroutines.Start(WaitForUi());
 
             ExtractExecutable();
             
@@ -137,8 +140,8 @@ namespace MuteTTS
                     audiosource.outputAudioMixerGroup = GetVoiceAudioMixerGroup();
                     audiosource.Play();
                     playing = true;
-                    lastMuteValue = DefaultTalkController.field_Private_Static_Boolean_0;
-                    DefaultTalkController.field_Private_Static_Boolean_0 = false;//Unmute
+                    lastMuteValue = micToggle.isOn;
+                    micToggle.onValueChanged.Invoke(true);
                 }
             });
         }
@@ -213,7 +216,8 @@ namespace MuteTTS
                 if (read == 0)
                 {
                     playing = false;
-                    DefaultTalkController.field_Private_Static_Boolean_0 = lastMuteValue;//Restore mute state
+                    if(micToggle != null)
+                    micToggle.onValueChanged.Invoke(lastMuteValue);
                     return;
                 }
 
@@ -231,6 +235,17 @@ namespace MuteTTS
                     data[i] = 0;
             }
             
+        }
+        private IEnumerator WaitForUi()
+        {
+            while (GameObject.Find("UserInterface") == null)
+                yield return null;
+            var userInterface = GameObject.Find("UserInterface").transform;
+            
+            while (userInterface.Find("Canvas_QuickMenu(Clone)/Container/Window/MicButton") == null)
+                yield return null;
+
+            micToggle = userInterface.Find("Canvas_QuickMenu(Clone)/Container/Window/MicButton").GetComponent<Toggle>();
         }
 
         private UnityEngine.Audio.AudioMixerGroup GetVoiceAudioMixerGroup()
