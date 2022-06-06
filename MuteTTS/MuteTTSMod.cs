@@ -16,7 +16,7 @@ using UnhollowerBaseLib;
 using UnityEngine;
 using UnityEngine.UI;
 
-[assembly: MelonInfo(typeof(MuteTTSMod), "MuteTTS", "1.1.0", "Eric van Fandenfart")]
+[assembly: MelonInfo(typeof(MuteTTSMod), "MuteTTS", "1.1.1", "Eric van Fandenfart")]
 [assembly: MelonAdditionalDependencies("ActionMenuApi", "UIExpansionKit")]
 [assembly: MelonGame]
 
@@ -35,7 +35,6 @@ namespace MuteTTS
         private static MelonPreferences_Entry<float> TTSSpeed;
         private static MelonPreferences_Entry<float> TTSVolume;
 
-        private MethodInfo UseKeyboardOnlyForText;
         private static Toggle micToggle;
 
         public override void OnApplicationStart()
@@ -59,8 +58,7 @@ namespace MuteTTS
             
             VRCActionMenuPage.AddButton(ActionMenuPage.Main, "TTS", () => CreateTextPopup());
             LogAvailableVoices();
-            UseKeyboardOnlyForText = typeof(VRCInputManager).GetMethods().First(mi => mi.Name.StartsWith("Method_Public_Static_Void_Boolean_0") && mi.GetParameters().Count() == 1);
-
+            
             HarmonyInstance.Patch(typeof(AudioClip).GetMethod("GetData", BindingFlags.Instance | BindingFlags.Public), postfix: new HarmonyMethod(typeof(MuteTTSMod).GetMethod("Get", BindingFlags.Static | BindingFlags.Public)));
         }
 
@@ -174,13 +172,16 @@ namespace MuteTTS
 
         private void CreateTextPopup()
         {
-            UseKeyboardOnlyForText.Invoke(null, new object[] { true });
+            var controller = VRCPlayer.field_Internal_Static_VRCPlayer_0.GetComponent<GamelikeInputController>();
+            controller.enabled = false;
 
             BuiltinUiUtils.ShowInputPopup("MuteTTS", "", InputField.InputType.Standard, false, "Send", (message, _, _2) =>
             {
-                UseKeyboardOnlyForText.Invoke(null, new object[] { false });
+                controller.enabled = true;
                 GetVoice(message);
-            },()=> { UseKeyboardOnlyForText.Invoke(null, new object[] { false }); });
+            },
+            ()=> controller.enabled = true
+            );
 
         }
 
