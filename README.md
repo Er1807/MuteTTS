@@ -1,3 +1,5 @@
+Now handled under the following repo https://github.com/Er1807/CVR-Mods
+
 # MuteTTS
 
 Mod for VRChat that allows for TTS to be used ingame
